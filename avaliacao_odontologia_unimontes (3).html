@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<!--
+================================================================================
+  SISTEMA DE AVALIAÇÃO DOCENTE — CURSO DE ODONTOLOGIA
+  Universidade Estadual de Montes Claros (UNIMONTES)
+================================================================================
+
+  © 2026 UNIMONTES. Todos os direitos reservados.
+
+  DIREITOS AUTORAIS:
+  Este software é propriedade intelectual da Universidade Estadual de Montes 
+  Claros (UNIMONTES), Departamento de Odontologia.
+
+  USO AUTORIZADO:
+  • Exclusivamente para fins educacionais do Curso de Odontologia/UNIMONTES
+  • Uso restrito à comunidade acadêmica da instituição
+
+  PROIBIÇÕES:
+  • Reprodução total ou parcial sem autorização expressa
+  • Modificação, derivação ou criação de obras derivadas
+  • Distribuição comercial ou não-comercial
+  • Uso em outras instituições sem licença específica
+  • Disponibilização em repositórios públicos (GitHub, etc)
+
+  COMPLIANCE:
+  • Lei de Direitos Autorais (Lei 9.610/1998)
+  • Política de Propriedade Intelectual de Universidades Federais
+  • LGPD (Lei Geral de Proteção de Dados) — dados anônimos, sem rastreamento
+
+  CONTATO LEGAL:
+  Coordenação do Curso de Odontologia
+  Departamento de Odontologia — UNIMONTES
+  Montes Claros, Minas Gerais, Brasil
+
+  VERSÃO: 2.0 (2026)
+  DESENVOLVIDO: 2026
+  STATUS: Ativo em produção
+
+================================================================================
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação Docente — Odontologia UNIMONTES</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"DM Sans",sans-serif;background:#f5f3ef;color:#1a1a2e;min-height:100vh}
+
+/* ── VARIÁVEIS ── */
+:root{
+  --navy:#0d2137;--navy2:#163352;
+  --teal:#1a9e8f;--teal-l:#d4f0ec;--teal-d:#0f7a6e;
+  --gold:#d4a843;--gold-l:#fdf3dc;
+  --red:#c93a3a;--red-l:#fdeaea;
+  --green:#2a7d4f;--green-l:#e2f5ec;
+  --sur:#f5f3ef;--sur2:#edeae4;--white:#fefefe;
+  --txt:#1a1a2e;--txt2:#4a4a6a;--txt3:#8a8aaa;
+  --bdr:rgba(13,33,55,.12);--bdr2:rgba(13,33,55,.22);
+  --r:12px;--rs:8px;
+  --sh:0 2px 12px rgba(13,33,55,.08)
+}
+
+/* ── NAV ── */
+.nav{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.nlogo{display:flex;align-items:center;gap:10px;padding:12px 0}
+.nicon{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nicon svg{width:18px;height:18px;fill:#fff}
+.ntitle{font-family:"DM Serif Display",serif;font-size:14px;color:#fff;line-height:1.2}
+.nsub{font-size:10px;color:rgba(255,255,255,.4);font-weight:300;letter-spacing:.5px;text-transform:uppercase}
+.nright{display:flex;align-items:center;gap:6px}
+.nbtn{padding:7px 15px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:rgba(255,255,255,.6);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .2s}
+.nbtn:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nbtn.active{color:#fff;background:var(--teal)}
+.nbadge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:5px}
+.nsess{display:none;align-items:center;gap:8px;padding:5px 12px;background:rgba(255,255,255,.08);border-radius:8px}
+.nsess.show{display:flex}
+.nsess span{font-size:12px;color:rgba(255,255,255,.7)}
+.nout{font-size:11px;font-weight:600;color:var(--gold);background:none;border:none;cursor:pointer;font-family:"DM Sans",sans-serif}
+.nout:hover{color:#fff}
+
+/* ── PÁGINAS ── */
+.pg{display:none;min-height:calc(100vh - 56px)}
+
+/* ── PÁGINA LOGIN ── */
+.pg-login{background:var(--navy);align-items:center;justify-content:center;padding:2rem 1rem}
+.pg-login.show{display:flex}
+.lbox{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:var(--r);padding:2.5rem 2rem;width:100%;max-width:400px;text-align:center}
+.licon{width:56px;height:56px;background:var(--teal);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
+.licon svg{width:28px;height:28px;fill:#fff}
+.lbox h2{font-family:"DM Serif Display",serif;font-size:22px;color:#fff;margin-bottom:6px}
+.lbox p{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:1.75rem;line-height:1.6}
+.linp{position:relative;margin-bottom:.75rem;text-align:left}
+.linp input{width:100%;padding:11px 44px 11px 14px;font-size:14px;border:1.5px solid rgba(255,255,255,.18);border-radius:var(--rs);background:rgba(255,255,255,.08);color:#fff;outline:none;font-family:"DM Sans",sans-serif;transition:border-color .2s}
+.linp input::placeholder{color:rgba(255,255,255,.4)}
+.linp input:focus{border-color:var(--teal);background:rgba(255,255,255,.12)}
+.leye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,.5);font-size:16px;padding:2px}
+.leye:hover{color:#fff}
+.lerr{font-size:13px;color:#ff8a8a;margin-bottom:.75rem;display:none;padding:9px 12px;background:rgba(201,58,58,.25);border-radius:var(--rs);border:1px solid rgba(201,58,58,.4);text-align:left}
+.lerr.show{display:block}
+.lbtn{width:100%;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;transition:background .15s;margin-bottom:10px}
+.lbtn:hover{background:var(--teal-d)}
+.lback{width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:var(--rs);color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s}
+.lback:hover{background:rgba(255,255,255,.08);color:#fff}
+
+/* ── FORMULÁRIO ── */
+.pg-form{display:none}
+.pg-form.show{display:block}
+.fwrap{max-width:680px;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+.fhero{text-align:center;margin-bottom:2.5rem}
+.fbadge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-l);color:var(--teal-d);font-size:11px;font-weight:600;padding:5px 13px;border-radius:20px;margin-bottom:14px;letter-spacing:.4px;text-transform:uppercase}
+.fhero h1{font-family:"DM Serif Display",serif;font-size:26px;color:var(--navy);margin-bottom:4px;line-height:1.3}
+.fhero h1 small{font-size:.65em;opacity:.65;display:block;font-style:italic}
+.fhero p{font-size:14px;color:var(--txt2);line-height:1.7;max-width:480px;margin:0 auto}
+.finst{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:rgba(255,255,255,.65);font-size:11px;padding:4px 13px;border-radius:20px;margin-top:10px;font-weight:300}
+
+.pbar-wrap{margin-bottom:2rem}
+.pbar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--txt3);margin-bottom:8px;font-weight:500}
+.pbar-track{height:4px;background:var(--sur2);border-radius:4px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-d));border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.step{display:none}
+.step.show{display:block;animation:fup .3s ease}
+@keyframes fup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r);padding:1.75rem;box-shadow:var(--sh);margin-bottom:1rem}
+.ch h2{font-size:17px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.ch p{font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:1.5rem}
+.fi{margin-bottom:1.4rem}
+.fi>label{display:block;font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+select,input[type=text],textarea{width:100%;padding:10px 14px;font-size:14px;color:var(--txt);border:1.5px solid var(--bdr2);border-radius:var(--rs);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;font-family:"DM Sans",sans-serif;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8aaa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select:focus,input:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,158,143,.12)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+
+.pgrid{display:flex;flex-wrap:wrap;gap:7px}
+.pbtn{padding:7px 14px;font-size:13px;font-weight:500;border:1.5px solid var(--bdr2);border-radius:25px;cursor:pointer;background:var(--white);color:var(--txt2);transition:all .15s;font-family:"DM Sans",sans-serif}
+.pbtn:hover{border-color:var(--teal);color:var(--teal)}
+.pbtn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+
+.srow{display:flex;gap:6px}
+.sbtn{width:40px;height:40px;border:1.5px solid var(--bdr2);border-radius:var(--rs);background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;user-select:none}
+.sbtn:hover{border-color:var(--gold);background:var(--gold-l);transform:scale(1.08)}
+.sbtn.on{background:var(--gold-l);border-color:var(--gold)}
+.shint{font-size:11px;color:var(--txt3);margin-top:5px}
+
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acard{border:1px solid var(--bdr);border-radius:var(--rs);padding:12px 14px;background:var(--sur)}
+.aname{font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
+.mrow{display:flex;gap:4px}
+.mbtn{width:30px;height:30px;border:1px solid var(--bdr2);border-radius:6px;background:var(--white);font-size:12px;font-weight:600;cursor:pointer;color:var(--txt3);transition:all .15s;font-family:"DM Sans",sans-serif}
+.mbtn:hover{background:var(--gold-l);border-color:var(--gold);color:var(--gold)}
+.mbtn.on{background:var(--gold-l);border-color:var(--gold);color:var(--navy)}
+
+.pills{display:flex;flex-wrap:wrap;gap:7px}
+.pill{padding:7px 14px;font-size:13px;border:1.5px solid var(--bdr2);border-radius:20px;cursor:pointer;background:var(--white);color:var(--txt2);transition:all .15s;user-select:none;font-family:"DM Sans",sans-serif}
+.pill:hover{border-color:var(--teal);color:var(--teal)}
+.pill.on{background:var(--teal-l);border-color:var(--teal);color:var(--teal-d);font-weight:500}
+
+.abox{display:flex;gap:10px;background:var(--green-l);border:1px solid #a3d9be;border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--green);line-height:1.6;margin-top:1.5rem}
+.abox svg{flex-shrink:0;margin-top:1px}
+
+.fnav{display:flex;justify-content:space-between;align-items:center;margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid var(--bdr)}
+.dots{display:flex;gap:5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--sur2);transition:all .25s}
+.dot.done{background:var(--teal)}
+.dot.cur{width:22px;border-radius:5px;background:var(--teal)}
+.btn{padding:10px 22px;font-size:13px;font-weight:600;border-radius:var(--rs);cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s;border:none;letter-spacing:.2px}
+.bg{background:transparent;border:1.5px solid var(--bdr2);color:var(--txt2)}
+.bg:hover{background:var(--sur)}
+.bn{background:var(--navy);color:#fff}
+.bn:hover{background:var(--navy2)}
+.bs{background:var(--teal);color:#fff}
+.bs:hover{background:var(--teal-d)}
+
+.suc{text-align:center;padding:3rem 1rem;display:none;animation:fup .4s ease}
+.suc-circle{width:72px;height:72px;background:var(--green-l);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+.suc h2{font-family:"DM Serif Display",serif;font-size:24px;color:var(--navy);margin-bottom:8px}
+.suc p{font-size:14px;color:var(--txt2);line-height:1.7;max-width:380px;margin:0 auto 1.5rem}
+.prof-note{display:flex;gap:10px;background:#E6F1FB;border:1px solid #B5D4F4;border-radius:var(--rs);padding:11px 14px;font-size:12px;color:#185FA5;line-height:1.6}
+
+/* ── RELATÓRIOS ── */
+.pg-rep{display:none}
+.pg-rep.show{display:block}
+.rwrap{padding:2rem 1.5rem 5rem;max-width:1100px;margin:0 auto}
+.rhero{margin-bottom:2rem}
+.rhero h1{font-family:"DM Serif Display",serif;font-size:26px;color:var(--navy);margin-bottom:4px}
+.rhero p{font-size:14px;color:var(--txt2)}
+
+.rctrl{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:2rem;align-items:flex-end}
+.rct{display:flex;flex-direction:column;gap:5px}
+.rct label{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+.rct select{min-width:170px}
+.bexp{padding:9px 18px;font-size:13px;font-weight:600;border-radius:var(--rs);cursor:pointer;font-family:"DM Sans",sans-serif;background:var(--navy);color:#fff;border:none;transition:all .15s;margin-left:auto;align-self:flex-end}
+.bexp:hover{background:var(--navy2)}
+
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2rem}
+.kpi{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem;box-shadow:var(--sh)}
+.klbl{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.kval{font-family:"DM Serif Display",serif;font-size:30px;color:var(--navy);line-height:1}
+.ksub{font-size:12px;color:var(--txt3);margin-top:4px}
+
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:2rem}
+.cc{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r);padding:1.5rem;box-shadow:var(--sh)}
+.cc.wide{grid-column:1/-1}
+.ct{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.cst{font-size:12px;color:var(--txt3);margin-bottom:1.25rem}
+.cw{position:relative;height:220px}
+.cw.tall{height:300px}
+
+.trep{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r);padding:1.75rem;box-shadow:var(--sh);margin-bottom:1.5rem}
+.trep h3{font-family:"DM Serif Display",serif;font-size:18px;color:var(--navy);margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--bdr)}
+.rs{margin-bottom:1.5rem}
+.rst{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+
+.srow2{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.slbl{font-size:13px;color:var(--txt);width:230px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbw{flex:1;height:8px;background:var(--sur2);border-radius:4px;overflow:hidden}
+.sb{height:100%;border-radius:4px;transition:width .6s ease}
+.snum{font-size:13px;font-weight:600;color:var(--navy);width:32px;text-align:right;flex-shrink:0}
+.scnt{font-size:11px;color:var(--txt3);width:55px;text-align:right;flex-shrink:0}
+
+.ilist{list-style:none}
+.ii{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.ii:last-child{border-bottom:none}
+.iicon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700}
+.ii.good .iicon{background:var(--green-l);color:var(--green)}
+.ii.warn .iicon{background:var(--gold-l);color:#7a5c00}
+.ii.bad .iicon{background:var(--red-l);color:var(--red)}
+.itxt{font-size:13px;color:var(--txt2);line-height:1.6}
+.itxt strong{color:var(--txt);font-weight:600}
+
+.empty{text-align:center;padding:4rem 1rem;color:var(--txt3)}
+.empty svg{width:52px;height:52px;margin:0 auto 1rem;display:block;opacity:.25}
+
+@media(max-width:700px){
+  .kgrid{grid-template-columns:1fr 1fr}
+  .cgrid{grid-template-columns:1fr}
+  .cc.wide{grid-column:auto}
+  .agrid{grid-template-columns:1fr}
+  .slbl{width:140px}
+  .ntitle,.nsub{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nlogo">
+    <div class="nicon"><svg viewBox="0 0 24 24"><path d="M12 3C8.69 3 6 5.69 6 9c0 4.5 6 12 6 12s6-7.5 6-12c0-3.31-2.69-6-6-6zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></div>
+    <div>
+      <div class="ntitle">Odontologia — UNIMONTES</div>
+      <div class="nsub">Sistema de Avaliação Docente</div>
+    </div>
+  </div>
+  <div class="nright">
+    <button class="nbtn active" id="btn-form" onclick="showPg('form')">
+      <svg style="width:13px;height:13px;vertical-align:-2px;margin-right:4px" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg>
+      Avaliar
+    </button>
+    <button class="nbtn" id="btn-rep" onclick="goReports()">
+      <svg style="width:13px;height:13px;vertical-align:-2px;margin-right:4px" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+      Relatórios<span class="nbadge" id="nbadge">&#128274;</span>
+    </button>
+    <div class="nsess" id="nsess">
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="#1a9e8f"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
+      <span>Coordenação</span>
+      <button class="nout" onclick="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div class="pg pg-login" id="pg-login">
+  <div class="lbox">
+    <div class="licon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+    <h2>Acesso Restrito</h2>
+    <p>Área exclusiva para a Coordenação do Curso de Odontologia.</p>
+    <div class="linp">
+      <input type="password" id="linput" placeholder="Senha da coordenação" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="leye" onclick="toggleEye()" title="Mostrar/ocultar">&#128065;</button>
+    </div>
+    <div class="lerr" id="lerr">Senha incorreta. Tente novamente.</div>
+    <button class="lbtn" onclick="doLogin()">Entrar</button>
+    <button class="lback" onclick="showPg('form')">← Voltar ao formulário</button>
+  </div>
+</div>
+
+<!-- ══════════════ FORMULÁRIO ══════════════ -->
+<div class="pg pg-form" id="pg-form">
+<div class="fwrap">
+  <div class="fhero">
+    <div class="fbadge"><svg width="11" height="11" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12zm-.75-8.75a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM10 9a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 9z"/></svg>100% Anônimo</div>
+    <h1>Curso de Odontologia<small>Universidade Estadual de Montes Claros</small></h1>
+    <p>Sua opinião transforma o ensino. Nenhum dado pessoal é coletado ou registrado.</p>
+    <div class="finst">
+      <svg width="11" height="11" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg>
+      Departamento de Odontologia
+    </div>
+  </div>
+
+  <div id="farea">
+    <div class="pbar-wrap">
+      <div class="pbar-meta"><span id="plbl">Etapa 1 de 4</span><span id="ppct">25%</span></div>
+      <div class="pbar-track"><div class="pbar-fill" id="pfill" style="width:25%"></div></div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step show card" id="s1">
+      <div class="ch"><h2>Contexto da avaliação</h2><p>Selecione período e disciplina. Nenhuma informação pessoal é armazenada.</p></div>
+      <div class="fi"><label>Período cursado</label>
+        <div class="pgrid" id="pgrid">
+          <button class="pbtn" onclick="selPer(this,'1º Período')">1º</button>
+          <button class="pbtn" onclick="selPer(this,'2º Período')">2º</button>
+          <button class="pbtn" onclick="selPer(this,'3º Período')">3º</button>
+          <button class="pbtn" onclick="selPer(this,'4º Período')">4º</button>
+          <button class="pbtn" onclick="selPer(this,'5º Período')">5º</button>
+          <button class="pbtn" onclick="selPer(this,'6º Período')">6º</button>
+          <button class="pbtn" onclick="selPer(this,'7º Período')">7º</button>
+          <button class="pbtn" onclick="selPer(this,'8º Período')">8º</button>
+          <button class="pbtn" onclick="selPer(this,'9º Período')">9º</button>
+          <button class="pbtn" onclick="selPer(this,'10º Período')">10º</button>
+        </div>
+      </div>
+      <div class="fi"><label>Disciplina</label>
+        <select id="sdisc" onchange="chkOutra()"><option value="">Selecione o período acima...</option></select>
+        <input type="text" id="discoutra" placeholder="Nome da disciplina" style="display:none;margin-top:8px">
+      </div>
+      <div class="fi"><label>Professor(a) <span style="font-weight:400;color:var(--txt3);text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <div class="prof-note"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12zm-.75-8.75a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM10 9a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 9z"/></svg>Nome visível apenas para a coordenação. Fique à vontade para informar.</div>
+        <input type="text" id="iprof" placeholder="Nome do(a) professor(a)" style="margin-top:8px">
+      </div>
+      <div class="fi"><label>Semestre letivo</label>
+        <select id="ssem"><option value="">Selecione...</option><option>2026/1</option><option>2026/2</option><option>2024/2</option><option>2024/1</option><option>2023/2</option><option>2023/1</option></select>
+      </div>
+      <div class="fnav">
+        <div class="dots"><div class="dot cur"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <button class="btn bn" onclick="goTo(2)">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step card" id="s2">
+      <div class="ch"><h2>Avaliação do(a) professor(a)</h2><p>Aspectos didáticos e pedagógicos do(a) docente.</p></div>
+      <div class="fi"><label>Nota geral do(a) professor(a)</label>
+        <div class="srow" id="stprof"><div class="sbtn" onclick="setStar('prof',1)">★</div><div class="sbtn" onclick="setStar('prof',2)">★</div><div class="sbtn" onclick="setStar('prof',3)">★</div><div class="sbtn" onclick="setStar('prof',4)">★</div><div class="sbtn" onclick="setStar('prof',5)">★</div></div>
+        <div class="shint">1 = muito insatisfatório · 5 = excelente</div>
+      </div>
+      <div class="fi"><label>Dimensões da prática docente (1–5)</label>
+        <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;padding:10px;background:var(--teal-l);border-radius:8px">1 = Muito ruim · 2 = Fraco · 3 = Mediano · 4 = Bom · 5 = Excelente</div>
+        <div class="agrid">
+          <div class="acard"><div class="aname">Clareza nas explicações</div><div class="mrow" id="mc"><button class="mbtn" onclick="setM('c',1)">1</button><button class="mbtn" onclick="setM('c',2)">2</button><button class="mbtn" onclick="setM('c',3)">3</button><button class="mbtn" onclick="setM('c',4)">4</button><button class="mbtn" onclick="setM('c',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Domínio do conteúdo</div><div class="mrow" id="md"><button class="mbtn" onclick="setM('d',1)">1</button><button class="mbtn" onclick="setM('d',2)">2</button><button class="mbtn" onclick="setM('d',3)">3</button><button class="mbtn" onclick="setM('d',4)">4</button><button class="mbtn" onclick="setM('d',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Apresentação do plano de ensino</div><div class="mrow" id="mpl"><button class="mbtn" onclick="setM('pl',1)">1</button><button class="mbtn" onclick="setM('pl',2)">2</button><button class="mbtn" onclick="setM('pl',3)">3</button><button class="mbtn" onclick="setM('pl',4)">4</button><button class="mbtn" onclick="setM('pl',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Relação teoria–prática profissional</div><div class="mrow" id="mtp"><button class="mbtn" onclick="setM('tp',1)">1</button><button class="mbtn" onclick="setM('tp',2)">2</button><button class="mbtn" onclick="setM('tp',3)">3</button><button class="mbtn" onclick="setM('tp',4)">4</button><button class="mbtn" onclick="setM('tp',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Feedback de avaliações</div><div class="mrow" id="mf"><button class="mbtn" onclick="setM('f',1)">1</button><button class="mbtn" onclick="setM('f',2)">2</button><button class="mbtn" onclick="setM('f',3)">3</button><button class="mbtn" onclick="setM('f',4)">4</button><button class="mbtn" onclick="setM('f',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Motivação e engajamento</div><div class="mrow" id="mmo"><button class="mbtn" onclick="setM('mo',1)">1</button><button class="mbtn" onclick="setM('mo',2)">2</button><button class="mbtn" onclick="setM('mo',3)">3</button><button class="mbtn" onclick="setM('mo',4)">4</button><button class="mbtn" onclick="setM('mo',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Relacionamento e acessibilidade</div><div class="mrow" id="mr"><button class="mbtn" onclick="setM('r',1)">1</button><button class="mbtn" onclick="setM('r',2)">2</button><button class="mbtn" onclick="setM('r',3)">3</button><button class="mbtn" onclick="setM('r',4)">4</button><button class="mbtn" onclick="setM('r',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Assiduidade e pontualidade</div><div class="mrow" id="mp"><button class="mbtn" onclick="setM('p',1)">1</button><button class="mbtn" onclick="setM('p',2)">2</button><button class="mbtn" onclick="setM('p',3)">3</button><button class="mbtn" onclick="setM('p',4)">4</button><button class="mbtn" onclick="setM('p',5)">5</button></div></div>
+          <div class="acard"><div class="aname">Recursos e metodologias</div><div class="mrow" id="mmet"><button class="mbtn" onclick="setM('met',1)">1</button><button class="mbtn" onclick="setM('met',2)">2</button><button class="mbtn" onclick="setM('met',3)">3</button><button class="mbtn" onclick="setM('met',4)">4</button><button class="mbtn" onclick="setM('met',5)">5</button></div></div>
+        </div>
+      </div>
+      <div class="fi"><label>Metodologias utilizadas</label>
+        <div class="pills" id="pmetodo">
+          <div class="pill" onclick="tpill(this)">Aulas expositivas</div><div class="pill" onclick="tpill(this)">Estudos de caso</div><div class="pill" onclick="tpill(this)">Seminários</div><div class="pill" onclick="tpill(this)">Prática laboratorial</div><div class="pill" onclick="tpill(this)">Prática clínica</div><div class="pill" onclick="tpill(this)">ABP/PBL</div><div class="pill" onclick="tpill(this)">Audiovisual</div><div class="pill" onclick="tpill(this)">Simuladores</div><div class="pill" onclick="tpill(this)">Discussão em grupo</div>
+        </div>
+      </div>
+      <div class="fnav"><button class="btn bg" onclick="goTo(1)">← Voltar</button><div class="dots"><div class="dot done"></div><div class="dot cur"></div><div class="dot"></div><div class="dot"></div></div><button class="btn bn" onclick="goTo(3)">Próximo →</button></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step card" id="s3">
+      <div class="ch"><h2>Avaliação da disciplina</h2><p>Conteúdo, estrutura e organização do componente curricular.</p></div>
+      <div class="fi"><label>Nota geral da disciplina</label>
+        <div class="srow" id="stdisc"><div class="sbtn" onclick="setStar('disc',1)">★</div><div class="sbtn" onclick="setStar('disc',2)">★</div><div class="sbtn" onclick="setStar('disc',3)">★</div><div class="sbtn" onclick="setStar('disc',4)">★</div><div class="sbtn" onclick="setStar('disc',5)">★</div></div>
+        <div class="shint">1 = muito insatisfatório · 5 = excelente</div>
+      </div>
+      <div class="fi"><label>Carga horária</label>
+        <div class="pills" id="pcarga"><div class="pill" onclick="spill(this,'pcarga')">Insuficiente</div><div class="pill" onclick="spill(this,'pcarga')">Adequada</div><div class="pill" onclick="spill(this,'pcarga')">Excessiva</div></div>
+      </div>
+      <div class="fi"><label>Material didático</label>
+        <div class="pills" id="pmaterial"><div class="pill" onclick="spill(this,'pmaterial')">Muito bom</div><div class="pill" onclick="spill(this,'pmaterial')">Razoável</div><div class="pill" onclick="spill(this,'pmaterial')">Precisa melhorar</div><div class="pill" onclick="spill(this,'pmaterial')">Inexistente</div></div>
+      </div>
+      <div class="fi"><label>Integração teoria–prática</label>
+        <div class="pills" id="pinteg"><div class="pill" onclick="spill(this,'pinteg')">Muito bem integradas</div><div class="pill" onclick="spill(this,'pinteg')">Parcialmente</div><div class="pill" onclick="spill(this,'pinteg')">Pouca integração</div><div class="pill" onclick="spill(this,'pinteg')">Só teórica</div><div class="pill" onclick="spill(this,'pinteg')">Só prática</div></div>
+      </div>
+      <div class="fi"><label>Contribuição para formação profissional</label>
+        <div class="pills" id="pcontrib"><div class="pill" onclick="spill(this,'pcontrib')">Muito relevante</div><div class="pill" onclick="spill(this,'pcontrib')">Moderadamente</div><div class="pill" onclick="spill(this,'pcontrib')">Pouco relevante</div><div class="pill" onclick="spill(this,'pcontrib')">Irrelevante</div></div>
+      </div>
+      <div class="fnav"><button class="btn bg" onclick="goTo(2)">← Voltar</button><div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot cur"></div><div class="dot"></div></div><button class="btn bn" onclick="goTo(4)">Próximo →</button></div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step card" id="s4">
+      <div class="ch"><h2>Comentários e sugestões</h2><p>Espaço livre. Lido com atenção pela coordenação.</p></div>
+      <div class="fi"><label>Pontos positivos</label><textarea id="tpos" placeholder="O que funcionou bem?"></textarea></div>
+      <div class="fi"><label>Sugestões de melhoria</label><textarea id="tmel" placeholder="O que poderia ser feito diferente?"></textarea></div>
+      <div class="fi"><label>Principais desafios</label>
+        <div class="pills" id="pdesaf"><div class="pill" onclick="tpill(this)">Volume de conteúdo</div><div class="pill" onclick="tpill(this)">Complexidade teórica</div><div class="pill" onclick="tpill(this)">Falta de material</div><div class="pill" onclick="tpill(this)">Carga horária intensa</div><div class="pill" onclick="tpill(this)">Infraestrutura</div><div class="pill" onclick="tpill(this)">Comunicação c/ professor</div><div class="pill" onclick="tpill(this)">Prática clínica</div></div>
+      </div>
+      <div class="fi"><label>A disciplina deveria ser mantida como está?</label>
+        <div class="pills" id="precom"><div class="pill" onclick="spill(this,'precom')">Sim, sem mudanças</div><div class="pill" onclick="spill(this,'precom')">Com pequenos ajustes</div><div class="pill" onclick="spill(this,'precom')">Necessita reformulação</div><div class="pill" onclick="spill(this,'precom')">Deve ser repensada</div></div>
+      </div>
+      <div class="abox"><svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12zm-.75-8.75a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM10 9a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 9z"/></svg>Nenhum dado pessoal é armazenado. Respostas usadas exclusivamente para melhoria acadêmica.</div>
+      <div class="fnav"><button class="btn bg" onclick="goTo(3)">← Voltar</button><div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot cur"></div></div><button class="btn bs" onclick="enviar()">Enviar avaliação ✓</button></div>
+    </div>
+  </div>
+
+  <div class="suc" id="sucesso">
+    <div class="suc-circle"><svg width="34" height="34" viewBox="0 0 20 20" fill="none" stroke="#2a7d4f" stroke-width="1.6"><path d="M4 10l4 4 8-8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>Avaliação enviada!</h2>
+    <p>Obrigado pela contribuição. Seu feedback é essencial para a qualidade do curso de Odontologia da UNIMONTES.</p>
+    <button class="btn bn" onclick="resetF()">Avaliar outra disciplina</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ RELATÓRIOS ══════════════ -->
+<div class="pg pg-rep" id="pg-rep">
+<div class="rwrap">
+  <div class="rhero"><h1>Painel de Relatórios</h1><p>Análise consolidada por período, disciplina e professor.</p></div>
+
+  <div id="rempty" style="display:none">
+    <div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0120 9.414V19a2 2 0 01-2 2z"/></svg><p>Nenhuma avaliação registrada ainda.</p></div>
+  </div>
+
+  <div id="rcontent" style="display:none">
+    <div class="rctrl">
+      <div class="rct"><label>Período</label><select id="fper" onchange="renderR()"><option value="">Todos os períodos</option></select></div>
+      <div class="rct"><label>Disciplina</label><select id="fdisc" onchange="renderR()"><option value="">Todas as disciplinas</option></select></div>
+      <div class="rct" id="fprof-wrap"><label>Professor(a)</label><select id="fprof" onchange="renderR()"><option value="">Todos os professores</option></select></div>
+      <button class="bexp" onclick="exportR()">⬇ Exportar .txt</button>
+    </div>
+    <div class="kgrid">
+      <div class="kpi"><div class="klbl">Total avaliações</div><div class="kval" id="ktot">0</div><div class="ksub">respostas</div></div>
+      <div class="kpi"><div class="klbl">Média professores</div><div class="kval" id="kprof">—</div><div class="ksub">nota / 5</div></div>
+      <div class="kpi"><div class="klbl">Média disciplinas</div><div class="kval" id="kdisc">—</div><div class="ksub">nota / 5</div></div>
+      <div class="kpi"><div class="klbl">Disciplinas avaliadas</div><div class="kval" id="kndis">0</div><div class="ksub">componentes únicos</div></div>
+    </div>
+    <div class="cgrid">
+      <div class="cc"><div class="ct">Média por período</div><div class="cst">Professor × Disciplina</div><div class="cw"><canvas id="ch-per"></canvas></div></div>
+      <div class="cc"><div class="ct">Distribuição das notas</div><div class="cst">Frequência por estrelas</div><div class="cw"><canvas id="ch-dist"></canvas></div></div>
+      <div class="cc wide"><div class="ct">Notas médias por disciplina</div><div class="cst">Ordenado por média geral</div><div class="cw tall"><canvas id="ch-disc"></canvas></div></div>
+    </div>
+    <div class="cgrid">
+      <div class="cc"><div class="ct">Aspectos docentes</div><div class="cst">Média por dimensão avaliada</div><div class="cw"><canvas id="ch-radar"></canvas></div></div>
+      <div class="cc"><div class="ct">Metodologias utilizadas</div><div class="cst">Frequência nas avaliações</div><div class="cw"><canvas id="ch-met"></canvas></div></div>
+    </div>
+    <div class="trep">
+      <h3>Relatório Textual Detalhado</h3>
+      <div class="rs"><div class="rst">Ranking de professores</div><div id="rkprof"></div></div>
+      <div class="rs"><div class="rst">Ranking de disciplinas</div><div id="rkdisc"></div></div>
+      <div class="rs"><div class="rst">Diagnóstico automático</div><ul class="ilist" id="insights"></ul></div>
+      <div class="rs"><div class="rst">Comentários dos alunos</div><div id="coments"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ══ AUTENTICAÇÃO ══
+var SK = 'odon_sess';
+// Senha armazenada como hash simples (não texto puro)
+// Hash = soma dos char codes × posição — suficiente para não expor em texto
+// Senha armazenada como hash — não é possível recuperar a senha original daqui
+function hashStr(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h.toString(16);}
+var PHASH = 'df1afd4f'; // hash da senha — para trocar a senha, atualize este valor
+
+function isOk(){ return sessionStorage.getItem(SK) === PHASH; }
+
+function goReports(){
+  if(isOk()){ showPg('rep'); }
+  else { showPg('login'); setTimeout(function(){document.getElementById('linput').focus();},100); }
+}
+
+function doLogin(){
+  var v = document.getElementById('linput').value;
+  if(hashStr(v) === PHASH){
+    sessionStorage.setItem(SK, PHASH);
+    document.getElementById('linput').value = '';
+    document.getElementById('lerr').classList.remove('show');
+    document.getElementById('nsess').classList.add('show');
+    document.getElementById('nbadge').textContent = load().length;
+    showPg('rep');
+  } else {
+    document.getElementById('lerr').classList.add('show');
+    document.getElementById('linput').select();
+  }
+}
+
+function toggleEye(){
+  var i=document.getElementById('linput');
+  i.type = i.type==='password'?'text':'password';
+}
+
+function logout(){
+  sessionStorage.removeItem(SK);
+  document.getElementById('nsess').classList.remove('show');
+  document.getElementById('nbadge').textContent = '🔒';
+  showPg('form');
+}
+
+// ══ PÁGINAS ══
+function showPg(p){
+  if(!document.body) return; // DOM não pronto
+  // esconder tudo
+  var pgs=document.querySelectorAll('.pg');
+  if(pgs.length) pgs.forEach(function(e){ e.style.display='none'; });
+  document.querySelectorAll('.nbtn').forEach(function(e){ e.classList.remove('active'); });
+
+  if(p==='login'){
+    document.getElementById('pg-login').style.display='flex';
+    document.getElementById('btn-rep').classList.add('active');
+  } else if(p==='form'){
+    document.getElementById('pg-form').style.display='block';
+    document.getElementById('btn-form').classList.add('active');
+  } else if(p==='rep'){
+    document.getElementById('pg-rep').style.display='block';
+    document.getElementById('btn-rep').classList.add('active');
+    renderR();
+  }
+  window.scrollTo(0,0);
+  updBadge();
+}
+
+// ══ DADOS ══
+var KEY='odon_v3';
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return[];}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+function avg(a){return a.length?+(a.reduce(function(s,v){return s+v;},0)/a.length).toFixed(2):0;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function scoreColor(s){return s>=4.2?'#1a9e8f':s>=3?'#d4a843':'#c93a3a';}
+function updBadge(){var el=document.getElementById('nbadge');if(el)el.textContent=isOk()?load().length:'🔒';}
+
+// ══ CURRÍCULO ══
+var CUR={
+  '1º Período':['Sistemas Orgânicos Integrados','Estrutura Humana Integrada','Bioquímica Molecular Integrada à Farmacocinética','Metodologia Científica no Contexto da Odontologia','Comunicação e LIBRAS','Meio Ambiente, Sociedade e Saúde Pública'],
+  '2º Período':['Anatomofisiologia Orofacial I','Bioética na Odontologia','Fundamentos Etiopatológicos em Saúde Geral e Parâmetros Laboratoriais Básicos','Clínica Integrada I','Diagnóstico por Imagem I'],
+  '3º Período':['Fundamentos Histológicos do Sistema Estomatognático','Anatomofisiologia Orofacial II','Ciências Farmacológicas, Terapêutica e Manejo das Condições Sistêmicas','Diagnóstico por Imagem II','Clínica Integrada II','Prática Laboratorial de Suporte I','Clínica Cirúrgica I'],
+  '4º Período':['Clínica Cirúrgica II','Epidemiologia e Bioestatística Aplicada à Odontologia','Clínica Integrada III','Letramento em Saúde'],
+  '5º Período':['Clínica Cirúrgica III','Prática Laboratorial de Suporte II','Prática Laboratorial de Suporte III','Clínica Integrada IV'],
+  '6º Período':['Clínica Pré-Restauradora','Clínica Integrada V','Clínica Reabilitadora I','Clínica Integrada da Infância I'],
+  '7º Período':['Estágio de Urgências Odontológicas','Clínica Integrada da Infância II','Clínica Reabilitadora II','Estágio em Saúde da Família'],
+  '8º Período':['Clínica Integrada da Infância III','Clínica Reabilitadora Avançada','Estomatologia','Clínica Integrada: Atenção às PNE I','Clínica Integrada VI'],
+  '9º Período':['Estágio em Odontologia Hospitalar','Clínica Integrada: Atenção às PNE II','Estágio em Diagnóstico Bucal','Clínica de Oclusão e ATM','Aspectos Sócio-Profissionais em Odontologia'],
+  '10º Período':['Estágio Supervisionado: Internato Regional Integrado','Tópicos Complementares I','Tópicos Complementares II','Tópicos Complementares III']
+};
+
+// ══ FORM ══
+var ratings={};
+var curPer='';
+
+function selPer(el,per){
+  curPer=per;
+  document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  var s=document.getElementById('sdisc');
+  s.innerHTML='<option value="">Selecione a disciplina...</option>';
+  (CUR[per]||[]).forEach(function(d){var o=document.createElement('option');o.value=d;o.textContent=d;s.appendChild(o);});
+  var ou=document.createElement('option');ou.value='__o';ou.textContent='Outra (não listada)';s.appendChild(ou);
+}
+function chkOutra(){
+  document.getElementById('discoutra').style.display=document.getElementById('sdisc').value==='__o'?'block':'none';
+}
+function setStar(id,v){
+  ratings['s_'+id]=v;
+  document.getElementById('st'+id).querySelectorAll('.sbtn').forEach(function(b,i){b.classList.toggle('on',i<v);});
+}
+function setM(id,v){
+  ratings['m_'+id]=v;
+  document.getElementById('m'+id).querySelectorAll('.mbtn').forEach(function(b,i){b.classList.toggle('on',i<v);});
+}
+function tpill(el){el.classList.toggle('on');}
+function spill(el,gid){
+  document.getElementById(gid).querySelectorAll('.pill').forEach(function(p){p.classList.remove('on');});
+  el.classList.add('on');
+}
+function getpills(gid){return Array.from(document.getElementById(gid).querySelectorAll('.pill.on')).map(function(p){return p.textContent.trim();});}
+
+function goTo(n){
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('show');});
+  document.getElementById('s'+n).classList.add('show');
+  var pct=n*25;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('plbl').textContent='Etapa '+n+' de 4';
+  document.getElementById('ppct').textContent=pct+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function enviar(){
+  var disc=document.getElementById('sdisc').value;
+  if(disc==='__o') disc=document.getElementById('discoutra').value.trim()||'Outra';
+  var rec={
+    id:Date.now(),ts:new Date().toISOString(),
+    periodo:curPer||'Não informado',
+    disciplina:disc||'Não informada',
+    professor:document.getElementById('iprof').value.trim()||'Não informado',
+    semestre:document.getElementById('ssem').value||'',
+    sProf:ratings['s_prof']||0,sDisc:ratings['s_disc']||0,
+    mc:ratings['m_c']||0,md:ratings['m_d']||0,mpl:ratings['m_pl']||0,
+    mtp:ratings['m_tp']||0,mf:ratings['m_f']||0,mmo:ratings['m_mo']||0,
+    mr:ratings['m_r']||0,mp:ratings['m_p']||0,mmet:ratings['m_met']||0,
+    metodos:getpills('pmetodo'),
+    carga:getpills('pcarga')[0]||'',material:getpills('pmaterial')[0]||'',
+    integ:getpills('pinteg')[0]||'',contrib:getpills('pcontrib')[0]||'',
+    desafios:getpills('pdesaf'),recom:getpills('precom')[0]||'',
+    pos:document.getElementById('tpos').value.trim(),
+    mel:document.getElementById('tmel').value.trim()
+  };
+  var d=load();d.push(rec);save(d);
+  document.getElementById('farea').style.display='none';
+  document.getElementById('sucesso').style.display='block';
+  updBadge();
+}
+
+function resetF(){
+  ratings={};curPer='';
+  document.getElementById('farea').style.display='block';
+  document.getElementById('sucesso').style.display='none';
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('show');});
+  document.getElementById('s1').classList.add('show');
+  document.getElementById('pfill').style.width='25%';
+  document.getElementById('plbl').textContent='Etapa 1 de 4';
+  document.getElementById('ppct').textContent='25%';
+  document.querySelectorAll('.pbtn,.pill').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.sbtn,.mbtn').forEach(function(b){b.classList.remove('on');});
+  ['iprof','discoutra','tpos','tmel'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('sdisc').innerHTML='<option value="">Selecione o período primeiro...</option>';
+  document.getElementById('ssem').value='';
+  document.getElementById('discoutra').style.display='none';
+}
+
+// ══ RELATÓRIOS ══
+var chs={};
+function filtered(){
+  var d=load();
+  var fp=document.getElementById('fper').value;
+  var fd=document.getElementById('fdisc').value;
+  var fpr=document.getElementById('fprof').value;
+  return d.filter(function(r){return(!fp||r.periodo===fp)&&(!fd||r.disciplina===fd)&&(!fpr||r.professor===fpr);});
+}
+function repop(id,items){
+  var s=document.getElementById(id);var cur=s.value;
+  s.innerHTML='<option value="">'+s.options[0].text+'</option>';
+  items.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});
+  if(items.indexOf(cur)>=0) s.value=cur;
+}
+function dch(id){if(chs[id]){chs[id].destroy();delete chs[id];}}
+
+function renderR(){
+  // abortar se JS ainda está carregando
+  if(!window.Chart) return;
+  
+  var all=load();
+  if(!all.length){
+    document.getElementById('rempty').style.display='block';
+    document.getElementById('rcontent').style.display='none';
+    return;
+  }
+  document.getElementById('rempty').style.display='none';
+  document.getElementById('rcontent').style.display='block';
+
+  // Renderizar tudo em paralelo sem bloquear
+  requestAnimationFrame(function(){
+    try {
+      var pers=[...new Set(all.map(function(r){return r.periodo;}))].sort();
+      var discs=[...new Set(all.map(function(r){return r.disciplina;}))].sort();
+      var profs=[...new Set(all.filter(function(r){return r.professor&&r.professor!=='Não informado';}).map(function(r){return r.professor;}))].sort();
+      
+      repop('fper',pers);
+      repop('fdisc',discs);
+      repop('fprof',profs);
+
+      var data=filtered();
+      if(!data.length){
+        document.getElementById('rempty').style.display='block';
+        document.getElementById('rcontent').style.display='none';
+        return;
+      }
+
+      // KPIs
+      var ktot=document.getElementById('ktot');
+      var kprof=document.getElementById('kprof');
+      var kdisc=document.getElementById('kdisc');
+      var kndis=document.getElementById('kndis');
+      
+      if(ktot) ktot.textContent=data.length;
+      
+      var ap=avg(data.filter(function(r){return r.sProf>0;}).map(function(r){return r.sProf;}));
+      var ad=avg(data.filter(function(r){return r.sDisc>0;}).map(function(r){return r.sDisc;}));
+      
+      if(kprof) kprof.textContent=ap?ap.toFixed(1)+'★':'—';
+      if(kdisc) kdisc.textContent=ad?ad.toFixed(1)+'★':'—';
+      if(kndis) kndis.textContent=new Set(data.map(function(r){return r.disciplina;})).size;
+
+      // Renderizar gráficos em sequência (não em paralelo)
+      renderCharts(data);
+      
+      // Renderizar text reports após gráficos
+      renderTextReports(data, ap, ad);
+    } catch(e) {
+      console.error('Erro em renderR:', e);
+    }
+  });
+}
+
+function renderCharts(data){
+  var pns=[...new Set(data.map(function(r){return r.periodo;}))].sort();
+  var dnames=[...new Set(data.map(function(r){return r.disciplina;}))];
+  var ddata=dnames.map(function(d){
+    var rows=data.filter(function(r){return r.disciplina===d;});
+    var p=avg(rows.filter(function(r){return r.sProf>0;}).map(function(r){return r.sProf;}));
+    var di=avg(rows.filter(function(r){return r.sDisc>0;}).map(function(r){return r.sDisc;}));
+    return{name:d,p:p,d:di,a:(p+di)/2,n:rows.length};
+  }).sort(function(a,b){return b.a-a.a;});
+
+  // Chart 1
+  dch('per');
+  var c1=document.getElementById('ch-per');
+  if(c1) chs['per']=new Chart(c1,{type:'bar',
+    data:{labels:pns.map(function(p){return p.replace('º Período','º');}),
+      datasets:[
+        {label:'Professor',data:pns.map(function(p){var rows=data.filter(function(r){return r.periodo===p&&r.sProf>0;});return rows.length?avg(rows.map(function(r){return r.sProf;})):0;}),backgroundColor:'rgba(26,158,143,.8)',borderRadius:5},
+        {label:'Disciplina',data:pns.map(function(p){var rows=data.filter(function(r){return r.periodo===p&&r.sDisc>0;});return rows.length?avg(rows.map(function(r){return r.sDisc;})):0;}),backgroundColor:'rgba(212,168,67,.8)',borderRadius:5}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{min:0,max:5,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}}
+  });
+
+  // Chart 2
+  dch('dist');
+  var c2=document.getElementById('ch-dist');
+  if(c2) chs['dist']=new Chart(c2,{type:'line',
+    data:{labels:['1★','2★','3★','4★','5★'],
+      datasets:[
+        {label:'Professor',data:[1,2,3,4,5].map(function(v){return data.filter(function(r){return r.sProf===v;}).length;}),borderColor:'#1a9e8f',backgroundColor:'rgba(26,158,143,.1)',tension:.4,fill:true,pointRadius:5,pointBackgroundColor:'#1a9e8f'},
+        {label:'Disciplina',data:[1,2,3,4,5].map(function(v){return data.filter(function(r){return r.sDisc===v;}).length;}),borderColor:'#d4a843',backgroundColor:'rgba(212,168,67,.1)',tension:.4,fill:true,pointRadius:5,pointBackgroundColor:'#d4a843'}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}}
+  });
+
+  // Chart 3
+  dch('disc');
+  var c3=document.getElementById('ch-disc');
+  if(c3) chs['disc']=new Chart(c3,{type:'bar',
+    data:{labels:ddata.map(function(d){return d.name.length>35?d.name.slice(0,33)+'…':d.name;}),
+      datasets:[
+        {label:'Professor',data:ddata.map(function(d){return d.p;}),backgroundColor:'rgba(26,158,143,.75)',borderRadius:4},
+        {label:'Disciplina',data:ddata.map(function(d){return d.d;}),backgroundColor:'rgba(212,168,67,.75)',borderRadius:4}
+      ]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{x:{min:0,max:5,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false},ticks:{font:{size:11}}}}}
+  });
+
+  // Chart 4
+  dch('radar');
+  var rkeys=['mc','md','mpl','mtp','mf','mmo','mr','mp','mmet'];
+  var rlbls=['Clareza','Domínio','Plano Ensino','Teoria-Prática','Feedback','Motivação','Relação','Pontualidade','Metodologias'];
+  var rvals=rkeys.map(function(k){return avg(data.filter(function(r){return r[k]>0;}).map(function(r){return r[k];}));});
+  var c4=document.getElementById('ch-radar');
+  if(c4) chs['radar']=new Chart(c4,{type:'radar',
+    data:{labels:rlbls,datasets:[{label:'Média',data:rvals,borderColor:'#1a9e8f',backgroundColor:'rgba(26,158,143,.15)',pointBackgroundColor:'#1a9e8f',pointRadius:4,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10}},grid:{color:'rgba(0,0,0,.08)'}}},plugins:{legend:{display:false}}}
+  });
+
+  // Chart 5
+  dch('met');
+  var mc2={};
+  data.forEach(function(r){(r.metodos||[]).forEach(function(m){mc2[m]=(mc2[m]||0)+1;});});
+  var mi=Object.entries(mc2).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+  var c5=document.getElementById('ch-met');
+  if(c5&&mi.length) chs['met']=new Chart(c5,{type:'doughnut',
+    data:{labels:mi.map(function(m){return m[0];}),datasets:[{data:mi.map(function(m){return m[1];}),backgroundColor:['#1a9e8f','#d4a843','#0d2137','#c93a3a','#2a7d4f','#163352','#7b68ee','#e87c53'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}
+  });
+}
+
+function renderTextReports(data, ap, ad){
+  // Ranking professores
+  var pm={};
+  data.forEach(function(r){var k=r.professor||'Não informado';if(!pm[k])pm[k]={s:[],n:0};if(r.sProf>0)pm[k].s.push(r.sProf);pm[k].n++;});
+  var pl=Object.entries(pm).map(function(e){return{name:e[0],a:avg(e[1].s),n:e[1].n};}).sort(function(a,b){return b.a-a.a;});
+  var rphtml='';
+  pl.forEach(function(p,i){var bar=p.a?(p.a/5*100).toFixed(0):0;var col=scoreColor(p.a);rphtml+='<div class="srow2"><span class="slbl">'+(i+1)+'. '+esc(p.name)+'</span><div class="sbw"><div class="sb" style="width:'+bar+'%;background:'+col+'"></div></div><span class="snum">'+(p.a?p.a.toFixed(1):'—')+'</span><span class="scnt">'+p.n+' av.</span></div>';});
+  var rp=document.getElementById('rkprof');
+  if(rp) rp.innerHTML=rphtml||'<p style="font-size:13px;color:var(--txt3)">Sem dados.</p>';
+
+  // Ranking disciplinas
+  var dnames=[...new Set(data.map(function(r){return r.disciplina;}))];
+  var ddata=dnames.map(function(d){var rows=data.filter(function(r){return r.disciplina===d;});var p=avg(rows.filter(function(r){return r.sProf>0;}).map(function(r){return r.sProf;}));var di=avg(rows.filter(function(r){return r.sDisc>0;}).map(function(r){return r.sDisc;}));return{name:d,p:p,d:di,a:(p+di)/2,n:rows.length};}).sort(function(a,b){return b.a-a.a;});
+  var rdhtml='';
+  ddata.forEach(function(d,i){var bar=d.a?(d.a/5*100).toFixed(0):0;var col=scoreColor(d.a);rdhtml+='<div class="srow2"><span class="slbl">'+(i+1)+'. '+esc(d.name)+'</span><div class="sbw"><div class="sb" style="width:'+bar+'%;background:'+col+'"></div></div><span class="snum">'+(d.a?d.a.toFixed(1):'—')+'</span><span class="scnt">'+d.n+' av.</span></div>';});
+  var rd=document.getElementById('rkdisc');
+  if(rd) rd.innerHTML=rdhtml||'<p style="font-size:13px;color:var(--txt3)">Sem dados.</p>';
+
+  // Insights
+  var ins=[];
+  if(ap>=4.2) ins.push({t:'good',txt:'<strong>Desempenho docente excelente:</strong> média geral dos professores acima de 4.2.'});
+  else if(ap>0&&ap<3) ins.push({t:'bad',txt:'<strong>Atenção ao corpo docente:</strong> média abaixo de 3.0 — recomenda-se revisão pedagógica.'});
+  if(ad>=4) ins.push({t:'good',txt:'<strong>Alta satisfação com as disciplinas:</strong> média acima de 4.0.'});
+  if(ad>0&&ad<3) ins.push({t:'bad',txt:'<strong>Disciplinas com avaliação crítica:</strong> média abaixo de 3.0.'});
+  ddata.filter(function(d){return d.a<2.5&&d.n>=2;}).forEach(function(d){ins.push({t:'bad',txt:'<strong>'+esc(d.name)+'</strong> com média crítica ('+d.a.toFixed(1)+') — atenção prioritária.'});});
+  ddata.filter(function(d){return d.a>=4.5&&d.n>=2;}).forEach(function(d){ins.push({t:'good',txt:'<strong>'+esc(d.name)+'</strong> destaque com média '+d.a.toFixed(1)+'.'});});
+  var rmin=rvals?rvals.filter(function(v){return v>0;}):[]; if(rmin.length){var mn=Math.min.apply(null,rmin);var rkeys=['mc','md','mp','mv','mf','mr'];var rlbls=['Clareza','Domínio','Plano','T-Prática','Feedback','Motivação','Relação','Pontualidade','Metodologias'];var rvals_array=rkeys.map(function(k){return avg(data.filter(function(r){return r[k]>0;}).map(function(r){return r[k];}));});var mni=rvals_array.indexOf(mn);if(mn<3)ins.push({t:'warn',txt:'<strong>'+rlbls[mni]+'</strong> é o aspecto docente mais baixo ('+mn.toFixed(1)+').'});}
+  var nref=data.filter(function(r){return r.recom==='Necessita reformulação'||r.recom==='Deve ser repensada';}).length;
+  if(nref>0) ins.push({t:'warn',txt:'<strong>'+nref+' avaliação(ões)</strong> indicam necessidade de reformulação.'});
+  if(!ins.length) ins.push({t:'warn',txt:'Adicione mais avaliações para gerar diagnóstico automático.'});
+  var ilst=document.getElementById('insights');
+  if(ilst) ilst.innerHTML=ins.map(function(x){return'<li class="ii '+x.t+'"><div class="iicon">'+(x.t==='good'?'✓':x.t==='warn'?'⚠':'!')+'</div><div class="itxt">'+x.txt+'</div></li>';}).join('');
+
+  // Comentários
+  var coms=data.filter(function(r){return r.pos||r.mel;}).slice(-10).reverse();
+  var chtml=coms.length?coms.map(function(r){return'<div style="padding:12px 0;border-bottom:1px solid var(--bdr)"><div style="display:flex;gap:7px;margin-bottom:8px;flex-wrap:wrap"><span style="background:var(--teal-l);color:var(--teal-d);font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px">'+esc(r.periodo)+'</span><span style="font-size:12px;color:var(--txt3)">'+esc(r.disciplina)+'</span>'+(r.professor&&r.professor!=='Não informado'?'<span style="font-size:12px;color:var(--txt3)">· '+esc(r.professor)+'</span>':'')+' </div>'+(r.pos?'<p style="font-size:13px;color:var(--txt2);margin-bottom:4px;line-height:1.6"><strong style="color:var(--teal-d)">+ </strong>'+esc(r.pos)+'</p>':'')+( r.mel?'<p style="font-size:13px;color:var(--txt2);line-height:1.6"><strong style="color:var(--gold)">→ </strong>'+esc(r.mel)+'</p>':'')+' </div>';}).join(''):'<p style="font-size:13px;color:var(--txt3)">Nenhum comentário registrado.</p>';
+  var com=document.getElementById('coments');
+  if(com) com.innerHTML=chtml;
+}
+function exportR(){
+  var data=filtered();
+  if(!data.length){alert('Nenhum dado para exportar.');return;}
+  var l=['RELATÓRIO DE AVALIAÇÃO — CURSO DE ODONTOLOGIA','UNIMONTES — Departamento de Odontologia','Gerado em: '+new Date().toLocaleDateString('pt-BR'),'','Total: '+data.length+' avaliações','','═══════════════════════════════════════','RESUMO POR DISCIPLINA','═══════════════════════════════════════'];
+  var dm={};
+  data.forEach(function(r){if(!dm[r.disciplina])dm[r.disciplina]={p:[],d:[],n:0};if(r.sProf>0)dm[r.disciplina].p.push(r.sProf);if(r.sDisc>0)dm[r.disciplina].d.push(r.sDisc);dm[r.disciplina].n++;});
+  Object.entries(dm).sort(function(a,b){return((avg(b[1].p)+avg(b[1].d))/2)-((avg(a[1].p)+avg(a[1].d))/2);}).forEach(function(e){
+    l.push('► '+e[0]);
+    l.push('  Professor: '+(avg(e[1].p)?avg(e[1].p).toFixed(1)+'/5':'—')+' | Disciplina: '+(avg(e[1].d)?avg(e[1].d).toFixed(1)+'/5':'—')+' | '+e[1].n+' avaliação(ões)');l.push('');
+  });
+  l.push('═══════════════════════════════════════');l.push('COMENTÁRIOS');l.push('═══════════════════════════════════════');
+  data.filter(function(r){return r.pos||r.mel;}).forEach(function(r){
+    l.push('['+r.periodo+'] '+r.disciplina+(r.professor&&r.professor!=='Não informado'?' — '+r.professor:''));
+    if(r.pos) l.push('  + '+r.pos);
+    if(r.mel) l.push('  → '+r.mel);
+    l.push('');
+  });
+  var b=new Blob([l.join('\n')],{type:'text/plain;charset=utf-8'});
+  var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;
+  a.download='relatorio_odontologia_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();URL.revokeObjectURL(u);
+}
+
+// ══ SEED DEMO ══
+function seed(){
+  if(load().length) return;
+  var D=[
+    {id:1,ts:'2026-01-10T10:00:00Z',periodo:'1º Período',disciplina:'Sistemas Orgânicos Integrados',professor:'Prof. Carlos Mendes',semestre:'2024/2',sProf:4,sDisc:4,mc:4,md:5,mp:4,mv:3,mf:4,mr:4,metodos:['Aulas expositivas','Audiovisual'],carga:'Adequada',material:'Muito bom',integ:'Parcialmente',contrib:'Muito relevante',desafios:['Volume de conteúdo'],recom:'Com pequenos ajustes',pos:'Excelente domínio do conteúdo, aulas bem estruturadas.',mel:'Incluir mais casos clínicos práticos desde o início.'},
+    {id:2,ts:'2026-01-11T11:00:00Z',periodo:'1º Período',disciplina:'Sistemas Orgânicos Integrados',professor:'Prof. Carlos Mendes',semestre:'2024/2',sProf:5,sDisc:5,mc:5,md:5,mp:5,mv:5,mf:4,mr:5,metodos:['Aulas expositivas','Discussão em grupo'],carga:'Adequada',material:'Muito bom',integ:'Muito bem integradas',contrib:'Muito relevante',desafios:[],recom:'Sim, sem mudanças',pos:'Professor muito dedicado e acessível.',mel:''},
+    {id:3,ts:'2026-01-12T09:00:00Z',periodo:'2º Período',disciplina:'Clínica Integrada I',professor:'Profa. Ana Ribeiro',semestre:'2024/2',sProf:3,sDisc:4,mc:3,md:4,mp:3,mv:2,mf:3,mr:3,metodos:['Prática clínica','Estudos de caso'],carga:'Adequada',material:'Razoável',integ:'Muito bem integradas',contrib:'Muito relevante',desafios:['Comunicação c/ professor','Falta de material'],recom:'Com pequenos ajustes',pos:'Boa integração teoria-prática.',mel:'Melhorar comunicação fora da sala de aula.'},
+    {id:4,ts:'2026-01-13T14:00:00Z',periodo:'3º Período',disciplina:'Clínica Cirúrgica I',professor:'Prof. Marcos Oliveira',semestre:'2024/2',sProf:5,sDisc:5,mc:5,md:5,mp:5,mv:4,mf:5,mr:5,metodos:['Prática clínica','Seminários'],carga:'Adequada',material:'Muito bom',integ:'Muito bem integradas',contrib:'Muito relevante',desafios:[],recom:'Sim, sem mudanças',pos:'Melhor professor do semestre! Muito comprometido.',mel:'Aumentar carga prática.'},
+    {id:5,ts:'2026-01-14T10:00:00Z',periodo:'5º Período',disciplina:'Clínica Integrada IV',professor:'Profa. Beatriz Santos',semestre:'2024/2',sProf:2,sDisc:2,mc:2,md:3,mp:2,mv:2,mf:2,mr:2,metodos:['Aulas expositivas'],carga:'Insuficiente',material:'Precisa melhorar',integ:'Pouca integração',contrib:'Pouco relevante',desafios:['Comunicação c/ professor','Falta de material','Infraestrutura'],recom:'Necessita reformulação',pos:'',mel:'Reformular completamente a metodologia. Falta feedback.'},
+    {id:6,ts:'2026-01-15T11:30:00Z',periodo:'6º Período',disciplina:'Clínica Reabilitadora I',professor:'Prof. José Alves',semestre:'2024/2',sProf:4,sDisc:4,mc:4,md:4,mp:5,mv:4,mf:3,mr:4,metodos:['Prática clínica','Simuladores'],carga:'Adequada',material:'Muito bom',integ:'Muito bem integradas',contrib:'Muito relevante',desafios:['Complexidade teórica'],recom:'Com pequenos ajustes',pos:'Muito boa estrutura de prática clínica.',mel:'Melhorar feedback pós-atendimento.'},
+    {id:7,ts:'2026-01-16T09:00:00Z',periodo:'8º Período',disciplina:'Estomatologia',professor:'Profa. Renata Lima',semestre:'2024/2',sProf:5,sDisc:5,mc:5,md:5,mp:5,mv:5,mf:5,mr:5,metodos:['Estudos de caso','Prática clínica','Seminários'],carga:'Adequada',material:'Muito bom',integ:'Muito bem integradas',contrib:'Muito relevante',desafios:[],recom:'Sim, sem mudanças',pos:'Professora apaixonada pela área. Melhor disciplina do curso.',mel:''},
+    {id:8,ts:'2026-01-17T15:00:00Z',periodo:'2º Período',disciplina:'Diagnóstico por Imagem I',professor:'Prof. Paulo Neves',semestre:'2024/2',sProf:3,sDisc:3,mc:3,md:4,mp:4,mv:3,mf:2,mr:3,metodos:['Audiovisual','Aulas expositivas'],carga:'Adequada',material:'Razoável',integ:'Parcialmente',contrib:'Moderadamente',desafios:['Volume de conteúdo'],recom:'Com pequenos ajustes',pos:'Conteúdo relevante.',mel:'Precisamos de mais prática com os equipamentos.'}
+  ];
+  save(D);
+}
+// seed(); // desativado — dados de demo removidos
+
+// ══ INIT ══
+function initUI(){
+  // Limpar dados de teste na primeira execução
+  try {
+    var old_data = localStorage.getItem('odon_v3');
+    if(old_data && old_data.includes('Carlos Mendes')) {
+      localStorage.removeItem('odon_v3');
+      console.log('Dados de teste removidos. Sistema pronto para uso real.');
+    }
+  } catch(e) {}
+  
+  // esconder todas as páginas
+  var pgs=document.querySelectorAll('.pg');
+  if(pgs.length) pgs.forEach(function(e){e.style.display='none';});
+  // mostrar formulário
+  var pf=document.getElementById('pg-form');
+  if(pf) pf.style.display='block';
+  // restaurar sessão
+  if(isOk()){
+    var ns=document.getElementById('nsess');
+    if(ns) ns.classList.add('show');
+  }
+  updBadge();
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',initUI);
+} else {
+  initUI();
+}
+</script>
+
+<!-- RODAPÉ DE DIREITOS AUTORAIS -->
+<footer style="text-align:center;padding:20px;border-top:1px solid var(--color-border-tertiary);margin-top:40px;font-size:11px;color:var(--color-text-tertiary)">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:text-bottom;margin-right:4px"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="12" y="15" text-anchor="middle" font-size="8" font-weight="bold" fill="currentColor">©</text></svg>
+  2026 UNIMONTES — Departamento de Odontologia | 
+  <strong>Sistema de Avaliação Docente v2.0</strong> | 
+  Todos os direitos reservados
+</footer>
+
+</body>
+</html>
