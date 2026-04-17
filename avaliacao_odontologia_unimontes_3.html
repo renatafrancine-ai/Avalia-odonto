@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação Docente — Odontologia UNIMONTES</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --primary: #1B6B4A;
+    --primary-light: #E8F5EE;
+    --primary-hover: #155A3E;
+    --accent: #D4A843;
+    --text: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --text-tertiary: #8A8A8A;
+    --border: #E5E2DE;
+    --border-light: #F0EDEA;
+    --danger: #C0392B;
+    --star-empty: #D5D0CA;
+    --star-filled: #D4A843;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .badge svg { width: 14px; height: 14px; }
+
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* ─── Progress ─── */
+  .progress-wrapper { margin-bottom: 2rem; }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .progress-bar {
+    background: var(--border-light);
+    border-radius: 6px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 6px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ─── Steps ─── */
+  .step { display: none; animation: fadeIn 0.35s ease; }
+  .step.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-icon { font-size: 28px; margin-bottom: 8px; }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .section-sub {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 1.75rem;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  /* ─── Fields ─── */
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .field label .required { color: var(--danger); margin-left: 2px; }
+
+  select, input[type="text"], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(27, 107, 74, 0.1);
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  select { cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235A5A5A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  /* ─── Star Rating ─── */
+  .rating-group { margin-bottom: 1.25rem; }
+
+  .rating-question {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+
+  .stars {
+    display: flex;
+    gap: 4px;
+    direction: rtl;
+    justify-content: flex-end;
+  }
+
+  .stars input { display: none; }
+
+  .stars label {
+    cursor: pointer;
+    font-size: 28px;
+    color: var(--star-empty);
+    transition: color 0.15s, transform 0.15s;
+    line-height: 1;
+  }
+
+  .stars label:hover,
+  .stars label:hover ~ label,
+  .stars input:checked ~ label {
+    color: var(--star-filled);
+  }
+
+  .stars label:hover { transform: scale(1.15); }
+
+  .rating-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    padding: 0 2px;
+  }
+
+  /* ─── Buttons ─── */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.75rem;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { background: var(--bg); }
+
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ─── Success ─── */
+  .success-screen {
+    text-align: center;
+    padding: 3rem 1rem;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .success-icon svg { width: 36px; height: 36px; color: var(--primary); }
+
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+
+  .success-screen h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .success-screen p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 360px;
+    margin: 0 auto 2rem;
+  }
+
+  .btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-new:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 480px) {
+    .app { padding: 1.25rem 1rem 3rem; }
+    .header h1 { font-size: 20px; }
+    .stars label { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Avaliação 100% anônima
+    </div>
+    <h1>Avaliação Docente</h1>
+    <p>Curso de Odontologia — UNIMONTES</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrapper">
+    <div class="progress-label">
+      <span id="stepLabel">Etapa 1 de 4</span>
+      <span id="stepPercent">25%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Identificação da Disciplina -->
+  <div class="step active" id="step1">
+    <div class="section-icon">📚</div>
+    <div class="section-title">Identificação</div>
+    <div class="section-sub">Selecione o período, disciplina e professor</div>
+
+    <div class="card">
+      <div class="field">
+        <label>Período <span class="required">*</span></label>
+        <select id="periodo">
+          <option value="">Selecione o período</option>
+          <option>1º Período</option><option>2º Período</option>
+          <option>3º Período</option><option>4º Período</option>
+          <option>5º Período</option><option>6º Período</option>
+          <option>7º Período</option><option>8º Período</option>
+          <option>9º Período</option><option>10º Período</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Disciplina <span class="required">*</span></label>
+        <input type="text" id="disciplina" placeholder="Ex: Anatomia Dental, Periodontia...">
+      </div>
+
+      <div class="field">
+        <label>Professor(a) <span class="required">*</span></label>
+        <input type="text" id="professor" placeholder="Nome do(a) professor(a)">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep(2)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Avaliação do Professor -->
+  <div class="step" id="step2">
+    <div class="section-icon">👨‍🏫</div>
+    <div class="section-title">Avaliação do Professor</div>
+    <div class="section-sub">Avalie de 1 (péssimo) a 5 (excelente)</div>
+
+    <div class="card">
+      <div class="rating-group" data-name="dominio">
+        <div class="rating-question">Domínio do conteúdo</div>
+        <div class="stars">
+          <input type="radio" name="dominio" value="5" id="d5"><label for="d5">★</label>
+          <input type="radio" name="dominio" value="4" id="d4"><label for="d4">★</label>
+          <input type="radio" name="dominio" value="3" id="d3"><label for="d3">★</label>
+          <input type="radio" name="dominio" value="2" id="d2"><label for="d2">★</label>
+          <input type="radio" name="dominio" value="1" id="d1"><label for="d1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="didatica">
+        <div class="rating-question">Didática e clareza nas explicações</div>
+        <div class="stars">
+          <input type="radio" name="didatica" value="5" id="di5"><label for="di5">★</label>
+          <input type="radio" name="didatica" value="4" id="di4"><label for="di4">★</label>
+          <input type="radio" name="didatica" value="3" id="di3"><label for="di3">★</label>
+          <input type="radio" name="didatica" value="2" id="di2"><label for="di2">★</label>
+          <input type="radio" name="didatica" value="1" id="di1"><label for="di1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="pontualidade">
+        <div class="rating-question">Pontualidade e assiduidade</div>
+        <div class="stars">
+          <input type="radio" name="pontualidade" value="5" id="p5"><label for="p5">★</label>
+          <input type="radio" name="pontualidade" value="4" id="p4"><label for="p4">★</label>
+          <input type="radio" name="pontualidade" value="3" id="p3"><label for="p3">★</label>
+          <input type="radio" name="pontualidade" value="2" id="p2"><label for="p2">★</label>
+          <input type="radio" name="pontualidade" value="1" id="p1"><label for="p1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="relacionamento">
+        <div class="rating-question">Relacionamento com os alunos</div>
+        <div class="stars">
+          <input type="radio" name="relacionamento" value="5" id="r5"><label for="r5">★</label>
+          <input type="radio" name="relacionamento" value="4" id="r4"><label for="r4">★</label>
+          <input type="radio" name="relacionamento" value="3" id="r3"><label for="r3">★</label>
+          <input type="radio" name="relacionamento" value="2" id="r2"><label for="r2">★</label>
+          <input type="radio" name="relacionamento" value="1" id="r1"><label for="r1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="avaliacao_justa">
+        <div class="rating-question">Avaliações justas e coerentes</div>
+        <div class="stars">
+          <input type="radio" name="avaliacao_justa" value="5" id="a5"><label for="a5">★</label>
+          <input type="radio" name="avaliacao_justa" value="4" id="a4"><label for="a4">★</label>
+          <input type="radio" name="avaliacao_justa" value="3" id="a3"><label for="a3">★</label>
+          <input type="radio" name="avaliacao_justa" value="2" id="a2"><label for="a2">★</label>
+          <input type="radio" name="avaliacao_justa" value="1" id="a1"><label for="a1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Avaliação da Disciplina -->
+  <div class="step" id="step3">
+    <div class="section-icon">📋</div>
+    <div class="section-title">Avaliação da Disciplina</div>
+    <div class="section-sub">Avalie a organização e qualidade do curso</div>
+
+    <div class="card">
+      <div class="rating-group" data-name="ementa">
+        <div class="rating-question">Ementa e conteúdo programático</div>
+        <div class="stars">
+          <input type="radio" name="ementa" value="5" id="e5"><label for="e5">★</label>
+          <input type="radio" name="ementa" value="4" id="e4"><label for="e4">★</label>
+          <input type="radio" name="ementa" value="3" id="e3"><label for="e3">★</label>
+          <input type="radio" name="ementa" value="2" id="e2"><label for="e2">★</label>
+          <input type="radio" name="ementa" value="1" id="e1"><label for="e1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="materiais">
+        <div class="rating-question">Materiais didáticos e recursos</div>
+        <div class="stars">
+          <input type="radio" name="materiais" value="5" id="m5"><label for="m5">★</label>
+          <input type="radio" name="materiais" value="4" id="m4"><label for="m4">★</label>
+          <input type="radio" name="materiais" value="3" id="m3"><label for="m3">★</label>
+          <input type="radio" name="materiais" value="2" id="m2"><label for="m2">★</label>
+          <input type="radio" name="materiais" value="1" id="m1"><label for="m1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="pratica">
+        <div class="rating-question">Integração teoria e prática clínica</div>
+        <div class="stars">
+          <input type="radio" name="pratica" value="5" id="pr5"><label for="pr5">★</label>
+          <input type="radio" name="pratica" value="4" id="pr4"><label for="pr4">★</label>
+          <input type="radio" name="pratica" value="3" id="pr3"><label for="pr3">★</label>
+          <input type="radio" name="pratica" value="2" id="pr2"><label for="pr2">★</label>
+          <input type="radio" name="pratica" value="1" id="pr1"><label for="pr1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+
+      <div class="rating-group" data-name="carga_horaria">
+        <div class="rating-question">Carga horária adequada</div>
+        <div class="stars">
+          <input type="radio" name="carga_horaria" value="5" id="ch5"><label for="ch5">★</label>
+          <input type="radio" name="carga_horaria" value="4" id="ch4"><label for="ch4">★</label>
+          <input type="radio" name="carga_horaria" value="3" id="ch3"><label for="ch3">★</label>
+          <input type="radio" name="carga_horaria" value="2" id="ch2"><label for="ch2">★</label>
+          <input type="radio" name="carga_horaria" value="1" id="ch1"><label for="ch1">★</label>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Próximo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Comentários -->
+  <div class="step" id="step4">
+    <div class="section-icon">💬</div>
+    <div class="section-title">Comentários</div>
+    <div class="section-sub">Suas sugestões são valiosas para melhorias</div>
+
+    <div class="card">
+      <div class="field">
+        <label>Pontos positivos da disciplina/professor</label>
+        <textarea id="positivos" placeholder="O que você mais gostou?"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Pontos a melhorar</label>
+        <textarea id="melhorar" placeholder="O que poderia ser melhorado?"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Sugestões gerais</label>
+        <textarea id="sugestoes" placeholder="Outras observações ou sugestões..."></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">← Voltar</button>
+      <button class="btn btn-primary" onclick="submitForm()">Enviar avaliação ✓</button>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div class="step" id="step5">
+    <div class="success-screen">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h2>Avaliação enviada!</h2>
+      <p>Obrigado por contribuir com a melhoria do nosso curso. Sua identidade permanece protegida.</p>
+      <button class="btn-new" onclick="resetForm()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Nova avaliação
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  function goStep(n) {
+    // Validação etapa 1
+    if (n > 1 && currentStep === 1) {
+      const periodo = document.getElementById('periodo').value;
+      const disciplina = document.getElementById('disciplina').value.trim();
+      const professor = document.getElementById('professor').value.trim();
+      if (!periodo || !disciplina || !professor) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+      }
+    }
+
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep = n;
+    document.getElementById('step' + currentStep).classList.add('active');
+
+    const pct = Math.round((Math.min(currentStep, totalSteps) / totalSteps) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('stepLabel').textContent = 'Etapa ' + Math.min(currentStep, totalSteps) + ' de ' + totalSteps;
+    document.getElementById('stepPercent').textContent = pct + '%';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitForm() {
+    // Coleta dados
+    const data = {
+      periodo: document.getElementById('periodo').value,
+      disciplina: document.getElementById('disciplina').value,
+      professor: document.getElementById('professor').value,
+      ratings: {},
+      positivos: document.getElementById('positivos').value,
+      melhorar: document.getElementById('melhorar').value,
+      sugestoes: document.getElementById('sugestoes').value,
+      timestamp: new Date().toISOString()
+    };
+
+    const ratingNames = ['dominio','didatica','pontualidade','relacionamento','avaliacao_justa','ementa','materiais','pratica','carga_horaria'];
+    ratingNames.forEach(name => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      data.ratings[name] = checked ? parseInt(checked.value) : 0;
+    });
+
+    // Salva no localStorage como backup
+    const key = 'avaliacao_' + Date.now();
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch(e) {}
+
+    console.log('Avaliação enviada:', data);
+
+    // Vai para tela de sucesso
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep = 5;
+    document.getElementById('step5').classList.add('active');
+
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('stepLabel').textContent = 'Concluído';
+    document.getElementById('stepPercent').textContent = '100%';
+  }
+
+  function resetForm() {
+    // Limpa campos
+    document.getElementById('periodo').value = '';
+    document.getElementById('disciplina').value = '';
+    document.getElementById('professor').value = '';
+    document.getElementById('positivos').value = '';
+    document.getElementById('melhorar').value = '';
+    document.getElementById('sugestoes').value = '';
+
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+    document.getElementById('step5').classList.remove('active');
+    currentStep = 1;
+    document.getElementById('step1').classList.add('active');
+
+    document.getElementById('progressFill').style.width = '25%';
+    document.getElementById('stepLabel').textContent = 'Etapa 1 de 4';
+    document.getElementById('stepPercent').textContent = '25%';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
