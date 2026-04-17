@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Teste GitHub Pages</title>
+<style>
+  body { font-family: Arial; text-align: center; padding: 2rem; background: #f0f0f0; }
+  .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; }
+  h1 { color: #28a745; }
+  p { color: #333; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>✓ GitHub Pages está funcionando!</h1>
+  <p>Se você vê esta página, significa que seu GitHub Pages está configurado corretamente.</p>
+  <p>Agora você pode fazer upload do arquivo <strong>index.html</strong> da avaliação.</p>
+</div>
+</body>
+</html>
